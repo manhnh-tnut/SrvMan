@@ -1,0 +1,81 @@
+﻿<Window x:Class="SrvMan.Presentation.Windows.CreateOrEditServiceWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:SrvMan.Presentation.ViewModels"
+        xmlns:prism="clr-namespace:SrvMan.Prism"
+        xmlns:views="clr-namespace:SrvMan.Presentation.Controls.Views"
+        xmlns:converters="clr-namespace:SrvMan.Presentation.Converters"
+        mc:Ignorable="d"
+        WindowStyle="ToolWindow"
+        SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        Width="500"
+        x:Name="Window"
+        prism:DialogCloser.DialogResult="{Binding DialogResult}"
+        d:DataContext="{d:DesignInstance viewModels:CreateOrEditServiceWindowViewModel}">
+    <Window.Style>
+        <Style TargetType="{x:Type Window}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Creation}" Value="true">
+                    <Setter Property="Title" Value="Create service"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Creation}" Value="false">
+                    <Setter Property="Title" Value="Change service"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Style>
+    <Window.Resources>
+        <Style TargetType="{x:Type StackPanel}">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Orientation" Value="Vertical"/>
+        </Style>
+        <Style TargetType="{x:Type TextBox}" x:Key="MultiLineTextBoxStyle">
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="AcceptsReturn" Value="True"/>
+        </Style>
+        <Style x:Key="CreateOrChaneButtonStyle" TargetType="{x:Type Button}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Creation}" Value="true"> 
+                    <Setter Property="Content" Value="Create"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Creation}" Value="false">
+                    <Setter Property="Content" Value="Change"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition />
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <StackPanel>
+            <Label Content="Service Name"/>
+            <TextBox Text="{Binding ServiceName}" IsEnabled="{Binding Creation}" IsReadOnly="{Binding Creation, Converter={StaticResource InverseBooleanConverter}}" />
+        </StackPanel>
+        <StackPanel Grid.Row="1">
+            <Label Content="Display Name"/>
+            <TextBox Text="{Binding DisplayName, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+        <StackPanel Grid.Row="2">
+            <Label Content="Description"/>
+            <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" Height="100" Style="{StaticResource MultiLineTextBoxStyle}" />
+        </StackPanel>
+        <views:ServiceUserDetails Grid.Row="3" DataContext="{Binding ElementName=Window, Path=DataContext.ServiceUser}" />
+        <views:ServiceFilePath Grid.Row="4" DataContext="{Binding ElementName=Window, Path=DataContext.ServiceFilePath}"/>
+        <views:ServiceStartupType Grid.Row="5" DataContext="{Binding ElementName=Window, Path=DataContext.ServiceStartupType}"/>
+        <StackPanel Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button Width="75" Command="{Binding CreateOrChangeCommand}" Margin="5" Style="{StaticResource CreateOrChaneButtonStyle}" />
+            <Button Content="Cancel" Width="75" Command="{Binding CancelCommand}" Margin="5"/>
+        </StackPanel>
+    </Grid>
+</Window>
